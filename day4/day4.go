@@ -14,6 +14,7 @@ func getBoards(data []string) [][]int {
 	for i := 2; i < len(data); i += 6 {
 		var board []int
 		boardCut := strings.Split(strings.Join(data[i:i+5], " "), " ")
+		fmt.Println(boardCut)
 		for _, s := range boardCut {
 			if s == "" {
 				continue
@@ -270,6 +271,6 @@ func main() {
 	// gamma/epsilon rate -> decimal
 	// return mulitplication of both
 
-	//firstPart()
-	secondPart()
+	firstPart()
+	//secondPart()
 }
