@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -19,7 +20,6 @@ func readFile(filename string) []string {
 	// add file content to values slice
 	sc := bufio.NewScanner(file)
 	var valuesStr []string
-	//	var valuesInt []int
 
 	// convert all values in slice to integer
 	for sc.Scan() {
@@ -63,9 +63,78 @@ func isEight(d string) bool {
 }
 
 func secondPart() {
-	// 8 is benchmark
-	// it allows us to determine the mapping between wires ans segments
-	// 1. look for 8
+	// frequency analysis based on elements
+	// a: 8
+	// b: 6
+	// c: 8
+	// d: 7
+	// e: 4
+	// f: 9
+	// g: 7
+	// therefore, the numbers can determined base on their frequency:
+	// 0 contains: a, b, c, e, f, g : 8+6+8+4+9+7=42
+	// 1 contains: c, f				: 8+9=17
+	// and so on
+
+	// done this by hand...
+	var numberMap = map[int]int{
+		42: 0, // abcefg
+		17: 1, // cf
+		34: 2, // acdeg
+		39: 3, // acdfg
+		30: 4, // bcdf
+		37: 5, // abdfg
+		41: 6, // abdefg
+		25: 7, // acf
+		49: 8, // abcdefg
+		45: 9, // abcdfg
+	}
+
+	var data = readFile("input.txt")
+	var resSlice [][]string
+
+	for _, row := range data {
+		dataSplit := strings.Split(row, " | ")
+		leftSplit := dataSplit[0]
+		rightSplit := dataSplit[1]
+		var resNumber []string
+
+		// go through all character blocks on the right side
+		for _, charBlock := range strings.Split(rightSplit, " ") {
+			cnt := 0
+
+			// go through all chars in the character block
+			for _, char := range charBlock {
+				cnt += freqCounter(string(char), leftSplit)
+			}
+			resNumber = append(resNumber, strconv.Itoa(numberMap[cnt]))
+		}
+		resSlice = append(resSlice, resNumber)
+	}
+
+	solSum := 0
+	var valJoin string
+	var intVal int
+
+	// sum everything up
+	for _, val := range resSlice {
+		valJoin = strings.Join(val[:], "")
+		intVal, _ = strconv.Atoi(valJoin)
+		solSum += intVal
+	}
+	fmt.Println("Second part: ", solSum)
+}
+
+// count the frequency of char in data
+func freqCounter(char string, data string) int {
+	cnt := 0
+
+	for _, c := range data {
+		if string(c) == char {
+			cnt += 1
+		}
+	}
+	return cnt
 }
 
 func firstPart() {
@@ -83,12 +152,10 @@ func firstPart() {
 		}
 	}
 
-	//fmt.Println(data)
-	//fmt.Println(splitData)
-	fmt.Println(cnt)
+	fmt.Println("First part: ", cnt)
 }
 
 func main() {
 	firstPart()
-	//secondPart()
+	secondPart()
 }
